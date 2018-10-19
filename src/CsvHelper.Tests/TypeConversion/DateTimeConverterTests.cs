@@ -1,16 +1,13 @@
-﻿// Copyright 2009-2015 Josh Close and Contributors
+﻿// Copyright 2009-2017 Josh Close and Contributors
 // This file is a part of CsvHelper and is dual licensed under MS-PL and Apache 2.0.
 // See LICENSE.txt for details or visit http://www.opensource.org/licenses/ms-pl.html for MS-PL and http://opensource.org/licenses/Apache-2.0 for Apache 2.0.
-// http://csvhelper.com
+// https://github.com/JoshClose/CsvHelper
 using System;
 using System.Globalization;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
-#if WINRT_4_5
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-#else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
+using Moq;
 
 namespace CsvHelper.Tests.TypeConversion
 {
@@ -21,7 +18,7 @@ namespace CsvHelper.Tests.TypeConversion
 		public void ConvertToStringTest()
 		{
 			var converter = new DateTimeConverter();
-			var propertyMapData = new CsvPropertyMapData( null )
+			var propertyMapData = new MemberMapData( null )
 			{
 				TypeConverter = converter,
 				TypeConverterOptions = { CultureInfo = CultureInfo.CurrentCulture }
@@ -42,8 +39,10 @@ namespace CsvHelper.Tests.TypeConversion
 		{
 			var converter = new DateTimeConverter();
 
-			var propertyMapData = new CsvPropertyMapData( null );
+			var propertyMapData = new MemberMapData( null );
 			propertyMapData.TypeConverterOptions.CultureInfo = CultureInfo.CurrentCulture;
+
+			var mockRow = new Mock<IReaderRow>();
 
 			var dateTime = DateTime.Now;
 
@@ -55,29 +54,24 @@ namespace CsvHelper.Tests.TypeConversion
 			// Invalid conversions.
 			try
 			{
-				converter.ConvertFromString( null, null, propertyMapData );
+				converter.ConvertFromString( null, mockRow.Object, propertyMapData );
 				Assert.Fail();
 			}
-			catch( CsvTypeConverterException )
+			catch( TypeConverterException )
 			{
 			}
 		}
 
-#if !PCL
 		[TestMethod]
 		public void ComponentModelCompatibilityTest()
 		{
 			var converter = new DateTimeConverter();
 			var cmConverter = new System.ComponentModel.DateTimeConverter();
 
-			var propertyMapData = new CsvPropertyMapData( null );
+			var propertyMapData = new MemberMapData( null );
 			propertyMapData.TypeConverterOptions.CultureInfo = CultureInfo.CurrentCulture;
 
-			var val = (DateTime)cmConverter.ConvertFromString( "" );
-			Assert.AreEqual( DateTime.MinValue, val );
-
-			val = (DateTime)converter.ConvertFromString( "", null, propertyMapData );
-			Assert.AreEqual( DateTime.MinValue, val );
+			var mockRow = new Mock<IReaderRow>();
 
 			try
 			{
@@ -88,10 +82,10 @@ namespace CsvHelper.Tests.TypeConversion
 
 			try
 			{
-				converter.ConvertFromString( null, null, propertyMapData );
+				converter.ConvertFromString( null, mockRow.Object, propertyMapData );
 				Assert.Fail();
 			}
-			catch( CsvTypeConverterException ) { }
+			catch( TypeConverterException ) { }
 
 			try
 			{
@@ -102,10 +96,9 @@ namespace CsvHelper.Tests.TypeConversion
 
 			try
 			{
-				converter.ConvertFromString( "blah", null, propertyMapData );
+				converter.ConvertFromString( "blah", mockRow.Object, propertyMapData );
 			}
 			catch( FormatException ){}
 		}
-#endif
 	}
 }

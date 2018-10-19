@@ -1,26 +1,36 @@
-﻿using System;
+﻿// Copyright 2009-2017 Josh Close and Contributors
+// This file is a part of CsvHelper and is dual licensed under MS-PL and Apache 2.0.
+// See LICENSE.txt for details or visit http://www.opensource.org/licenses/ms-pl.html for MS-PL and http://opensource.org/licenses/Apache-2.0 for Apache 2.0.
+// https://github.com/JoshClose/CsvHelper
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using CsvHelper.Configuration;
 
 namespace CsvHelper.Tests.Mocks
 {
-	public class SerializerMock : ICsvSerializer
+	public class SerializerMock : ISerializer
 	{
 		private readonly List<string[]> records = new List<string[]>();
 		private readonly bool throwExceptionOnWrite;
 
-		public CsvConfiguration Configuration { get; private set; }
+		public TextWriter TextWriter { get; }
+
+		public ISerializerConfiguration Configuration { get; }
 
 		public List<string[]> Records
 		{
 			get { return records; }
 		}
 
+		public WritingContext Context { get; }
+
 		public SerializerMock( bool throwExceptionOnWrite = false )
 		{
-			Configuration = new CsvConfiguration();
+			Context = new WritingContext( new StringWriter(), new CsvHelper.Configuration.Configuration(), false );
 			this.throwExceptionOnWrite = throwExceptionOnWrite;
 		}
 
@@ -34,8 +44,22 @@ namespace CsvHelper.Tests.Mocks
 			records.Add( record );
 		}
 
+		public void WriteLine()
+		{
+		}
+
 		public void Dispose()
 		{
+		}
+
+		public Task WriteAsync( string[] record )
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task WriteLineAsync()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

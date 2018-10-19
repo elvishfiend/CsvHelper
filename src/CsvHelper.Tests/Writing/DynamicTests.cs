@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Copyright 2009-2017 Josh Close and Contributors
+// This file is a part of CsvHelper and is dual licensed under MS-PL and Apache 2.0.
+// See LICENSE.txt for details or visit http://www.opensource.org/licenses/ms-pl.html for MS-PL and http://opensource.org/licenses/Apache-2.0 for Apache 2.0.
+// https://github.com/JoshClose/CsvHelper
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
@@ -25,12 +29,18 @@ namespace CsvHelper.Tests.Writing
 				obj.Name = "one";
 				list.Add( obj );
 
+				obj = new ExpandoObject();
+				obj.Id = 2;
+				obj.Name = "two";
+				list.Add( obj );
+
 				csv.WriteRecords( list );
 				writer.Flush();
 				stream.Position = 0;
 
 				var expected = "Id,Name\r\n";
 				expected += "1,one\r\n";
+				expected += "2,two\r\n";
 
 				Assert.AreEqual( expected, reader.ReadToEnd() );
 			}
@@ -50,11 +60,20 @@ namespace CsvHelper.Tests.Writing
 
 				csv.WriteRecord( obj );
                 csv.NextRecord();
+
+				obj = new ExpandoObject();
+				obj.Id = 2;
+				obj.Name = "two";
+
+				csv.WriteRecord( obj );
+				csv.NextRecord();
+
                 writer.Flush();
 				stream.Position = 0;
 
 				var expected = "Id,Name\r\n";
 				expected += "1,one\r\n";
+				expected += "2,two\r\n";
 
 				Assert.AreEqual( expected, reader.ReadToEnd() );
 			}

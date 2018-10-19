@@ -1,7 +1,7 @@
-﻿// Copyright 2009-2014 Josh Close and Contributors
-// This file is a part of CsvHelper and is licensed under the MS-PL
-// See LICENSE.txt for details or visit http://www.opensource.org/licenses/ms-pl.html
-// http://csvhelper.com
+﻿// Copyright 2009-2017 Josh Close and Contributors
+// This file is a part of CsvHelper and is dual licensed under MS-PL and Apache 2.0.
+// See LICENSE.txt for details or visit http://www.opensource.org/licenses/ms-pl.html for MS-PL and http://opensource.org/licenses/Apache-2.0 for Apache 2.0.
+// https://github.com/JoshClose/CsvHelper
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -65,7 +65,7 @@ namespace CsvHelper.Tests
 			public string Id { get; set; }
 		}
 
-		private sealed class AMap : CsvClassMap<A>
+		private sealed class AMap : ClassMap<A>
 		{
 			public AMap()
 			{
@@ -74,7 +74,7 @@ namespace CsvHelper.Tests
 			}
 		}
 
-		private sealed class BMap : CsvClassMap<B>
+		private sealed class BMap : ClassMap<B>
 		{
 			public BMap()
 			{
@@ -83,7 +83,7 @@ namespace CsvHelper.Tests
 			}
 		}
 
-		private sealed class CMap : CsvClassMap<C>
+		private sealed class CMap : ClassMap<C>
 		{
 			public CMap()
 			{

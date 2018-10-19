@@ -1,18 +1,14 @@
-﻿// Copyright 2009-2015 Josh Close and Contributors
+﻿// Copyright 2009-2017 Josh Close and Contributors
 // This file is a part of CsvHelper and is dual licensed under MS-PL and Apache 2.0.
 // See LICENSE.txt for details or visit http://www.opensource.org/licenses/ms-pl.html for MS-PL and http://opensource.org/licenses/Apache-2.0 for Apache 2.0.
-// http://csvhelper.com
+// https://github.com/JoshClose/CsvHelper
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using CsvHelper.Configuration;
-#if WINRT_4_5
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-#else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
 
 namespace CsvHelper.Tests
 {
@@ -69,7 +65,7 @@ namespace CsvHelper.Tests
 			public FirstClass First { get; set; }
 		}
 
-		private sealed class ContainerClassMap : CsvClassMap<ContainerClass>
+		private sealed class ContainerClassMap : ClassMap<ContainerClass>
 		{
 			public ContainerClassMap()
 			{
@@ -77,7 +73,7 @@ namespace CsvHelper.Tests
 			}
 		}
 
-		private sealed class ThirdClassMap : CsvClassMap<ThirdClass>
+		private sealed class ThirdClassMap : ClassMap<ThirdClass>
 		{
 			public ThirdClassMap()
 			{
@@ -92,7 +88,7 @@ namespace CsvHelper.Tests
 			public int Second { get; set; }
 		}
 
-		private sealed class SecondClassMap : CsvClassMap<SecondClass>
+		private sealed class SecondClassMap : ClassMap<SecondClass>
 		{
 			public SecondClassMap()
 			{
@@ -105,7 +101,7 @@ namespace CsvHelper.Tests
 			public int First { get; set; }
 		}
 
-		private sealed class FirstClassMap : CsvClassMap<FirstClass>
+		private sealed class FirstClassMap : ClassMap<FirstClass>
 		{
 			public FirstClassMap()
 			{

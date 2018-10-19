@@ -1,15 +1,11 @@
-﻿// Copyright 2009-2015 Josh Close and Contributors
+﻿// Copyright 2009-2017 Josh Close and Contributors
 // This file is a part of CsvHelper and is dual licensed under MS-PL and Apache 2.0.
 // See LICENSE.txt for details or visit http://www.opensource.org/licenses/ms-pl.html for MS-PL and http://opensource.org/licenses/Apache-2.0 for Apache 2.0.
-// http://csvhelper.com
+// https://github.com/JoshClose/CsvHelper
 using System;
 using System.IO;
 using CsvHelper.Configuration;
-#if WINRT_4_5
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-#else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
 
 namespace CsvHelper.Tests
 {
@@ -26,7 +22,7 @@ namespace CsvHelper.Tests
 
 				Assert.AreSame( csvReader.Configuration, csvReader.Parser.Configuration );
 
-				var config = new CsvConfiguration();
+				var config = new CsvHelper.Configuration.Configuration();
 				var parser = new CsvParser( reader, config );
 				csvReader = new CsvReader( parser );
 
@@ -37,43 +33,43 @@ namespace CsvHelper.Tests
 		[TestMethod]
 		public void AddingMappingsWithGenericMethod1Test()
 		{
-			var config = new CsvConfiguration();
+			var config = new CsvHelper.Configuration.Configuration();
 			config.RegisterClassMap<TestClassMappings>();
 
-			Assert.AreEqual( 2, config.Maps[typeof( TestClass )].PropertyMaps.Count );
+			Assert.AreEqual( 2, config.Maps[typeof( TestClass )].MemberMaps.Count );
 		}
 
 		[TestMethod]
 		public void AddingMappingsWithGenericMethod2Test()
 		{
-			var config = new CsvConfiguration();
+			var config = new CsvHelper.Configuration.Configuration();
 			config.RegisterClassMap<TestClassMappings>();
 
-			Assert.AreEqual( 2, config.Maps[typeof( TestClass )].PropertyMaps.Count );
+			Assert.AreEqual( 2, config.Maps[typeof( TestClass )].MemberMaps.Count );
 		}
 
 		[TestMethod]
 		public void AddingMappingsWithNonGenericMethodTest()
 		{
-			var config = new CsvConfiguration();
+			var config = new CsvHelper.Configuration.Configuration();
 			config.RegisterClassMap( typeof( TestClassMappings ) );
 
-			Assert.AreEqual( 2, config.Maps[typeof( TestClass )].PropertyMaps.Count );
+			Assert.AreEqual( 2, config.Maps[typeof( TestClass )].MemberMaps.Count );
 		}
 
 		[TestMethod]
 		public void AddingMappingsWithInstanceMethodTest()
 		{
-			var config = new CsvConfiguration();
+			var config = new CsvHelper.Configuration.Configuration();
 			config.RegisterClassMap( new TestClassMappings() );
 
-			Assert.AreEqual( 2, config.Maps[typeof( TestClass )].PropertyMaps.Count );
+			Assert.AreEqual( 2, config.Maps[typeof( TestClass )].MemberMaps.Count );
 		}
 
 		[TestMethod]
 		public void RegisterClassMapGenericTest()
 		{
-			var config = new CsvConfiguration();
+			var config = new CsvHelper.Configuration.Configuration();
 
 			Assert.IsNull( config.Maps[typeof( TestClass )] );
 			config.RegisterClassMap<TestClassMappings>();
@@ -83,7 +79,7 @@ namespace CsvHelper.Tests
 		[TestMethod]
 		public void RegisterClassMapNonGenericTest()
 		{
-			var config = new CsvConfiguration();
+			var config = new CsvHelper.Configuration.Configuration();
 
 			Assert.IsNull( config.Maps[typeof( TestClass )] );
 			config.RegisterClassMap( typeof( TestClassMappings ) );
@@ -93,7 +89,7 @@ namespace CsvHelper.Tests
 		[TestMethod]
 		public void RegisterClassInstanceTest()
 		{
-			var config = new CsvConfiguration();
+			var config = new CsvHelper.Configuration.Configuration();
 
 			Assert.IsNull( config.Maps[typeof( TestClass )] );
 			config.RegisterClassMap( new TestClassMappings() );
@@ -103,7 +99,7 @@ namespace CsvHelper.Tests
 		[TestMethod]
 		public void UnregisterClassMapGenericTest()
 		{
-			var config = new CsvConfiguration();
+			var config = new CsvHelper.Configuration.Configuration();
 
 			Assert.IsNull( config.Maps[typeof( TestClass )] );
 			config.RegisterClassMap<TestClassMappings>();
@@ -116,7 +112,7 @@ namespace CsvHelper.Tests
 		[TestMethod]
 		public void UnregisterClassNonMapGenericTest()
 		{
-			var config = new CsvConfiguration();
+			var config = new CsvHelper.Configuration.Configuration();
 
 			Assert.IsNull( config.Maps[typeof( TestClass )] );
 			config.RegisterClassMap( typeof( TestClassMappings ) );
@@ -126,19 +122,16 @@ namespace CsvHelper.Tests
 			Assert.IsNull( config.Maps[typeof( TestClass )] );
 		}
 
-
-#if !WINRT_4_5
 		[TestMethod]
 		public void AddingMappingsWithNonGenericMethodThrowsWhenNotACsvClassMap()
 		{
 			try
 			{
-				new CsvConfiguration().RegisterClassMap( typeof( TestClass ) );
+				new CsvHelper.Configuration.Configuration().RegisterClassMap( typeof( TestClass ) );
 				Assert.Fail();
 			}
 			catch( ArgumentException ) {}
 		}
-#endif
 
 		private class TestClass
 		{
@@ -146,7 +139,7 @@ namespace CsvHelper.Tests
 			public int IntColumn { get; set; }
 		}
 
-		private class TestClassMappings : CsvClassMap<TestClass>
+		private class TestClassMappings : ClassMap<TestClass>
 		{
 			public TestClassMappings()
 			{

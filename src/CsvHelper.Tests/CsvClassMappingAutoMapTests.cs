@@ -1,16 +1,12 @@
-﻿// Copyright 2009-2015 Josh Close and Contributors
+﻿// Copyright 2009-2017 Josh Close and Contributors
 // This file is a part of CsvHelper and is dual licensed under MS-PL and Apache 2.0.
 // See LICENSE.txt for details or visit http://www.opensource.org/licenses/ms-pl.html for MS-PL and http://opensource.org/licenses/Apache-2.0 for Apache 2.0.
-// http://csvhelper.com
+// https://github.com/JoshClose/CsvHelper
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-#if WINRT_4_5
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-#else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
 using CsvHelper.Configuration;
 
 namespace CsvHelper.Tests
@@ -23,11 +19,11 @@ namespace CsvHelper.Tests
 		{
 			var aMap = new AMap();
 
-			Assert.AreEqual( 3, aMap.PropertyMaps.Count );
-			Assert.AreEqual( 0, aMap.PropertyMaps[0].Data.Index );
-			Assert.AreEqual( 1, aMap.PropertyMaps[1].Data.Index );
-			Assert.AreEqual( 2, aMap.PropertyMaps[2].Data.Index );
-			Assert.AreEqual( true, aMap.PropertyMaps[2].Data.Ignore );
+			Assert.AreEqual( 3, aMap.MemberMaps.Count );
+			Assert.AreEqual( 0, aMap.MemberMaps[0].Data.Index );
+			Assert.AreEqual( 1, aMap.MemberMaps[1].Data.Index );
+			Assert.AreEqual( 2, aMap.MemberMaps[2].Data.Index );
+			Assert.AreEqual( true, aMap.MemberMaps[2].Data.Ignore );
 
 			Assert.AreEqual( 1, aMap.ReferenceMaps.Count );
 		}
@@ -52,7 +48,7 @@ namespace CsvHelper.Tests
 			public int Six { get; set; }
 		}
 
-		private sealed class AMap : CsvClassMap<A>
+		private sealed class AMap : ClassMap<A>
 		{
 			public AMap()
 			{
@@ -61,7 +57,7 @@ namespace CsvHelper.Tests
 			}
 		}
 
-		private sealed class BMap : CsvClassMap<B>
+		private sealed class BMap : ClassMap<B>
 		{
 		}
 	}

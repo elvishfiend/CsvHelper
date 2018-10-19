@@ -1,18 +1,14 @@
-﻿// Copyright 2009-2015 Josh Close and Contributors
+﻿// Copyright 2009-2017 Josh Close and Contributors
 // This file is a part of CsvHelper and is dual licensed under MS-PL and Apache 2.0.
 // See LICENSE.txt for details or visit http://www.opensource.org/licenses/ms-pl.html for MS-PL and http://opensource.org/licenses/Apache-2.0 for Apache 2.0.
-// http://csvhelper.com
+// https://github.com/JoshClose/CsvHelper
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using CsvHelper.TypeConversion;
-#if WINRT_4_5
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-#else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
 
 namespace CsvHelper.Tests.TypeConversion
 {
@@ -22,7 +18,8 @@ namespace CsvHelper.Tests.TypeConversion
 		[TestMethod]
 		public void GetConverterForUnknownTypeTest()
 		{
-			var converter = TypeConverterFactory.GetConverter( typeof( TestUnknownClass ) );
+			var typeConverterFactory = new TypeConverterCache();
+			var converter = typeConverterFactory.GetConverter( typeof( TestUnknownClass ) );
 
 			Assert.IsInstanceOfType( converter, typeof( DefaultTypeConverter ) );
 		}
@@ -30,12 +27,13 @@ namespace CsvHelper.Tests.TypeConversion
 		[TestMethod]
 		public void GetConverterForKnownTypeTest()
 		{
-			var converter = TypeConverterFactory.GetConverter<TestKnownClass>();
+			var typeConverterFactory = new TypeConverterCache();
+			var converter = typeConverterFactory.GetConverter<TestKnownClass>();
 
 			Assert.IsInstanceOfType( converter, typeof( DefaultTypeConverter ) );
 
-			TypeConverterFactory.AddConverter<TestKnownClass>( new TestKnownConverter() );
-			converter = TypeConverterFactory.GetConverter<TestKnownClass>();
+			typeConverterFactory.AddConverter<TestKnownClass>( new TestKnownConverter() );
+			converter = typeConverterFactory.GetConverter<TestKnownClass>();
 
 			Assert.IsInstanceOfType( converter, typeof( TestKnownConverter ) );
 		}
@@ -43,22 +41,34 @@ namespace CsvHelper.Tests.TypeConversion
 		[TestMethod]
 		public void RemoveConverterForUnknownTypeTest()
 		{
-			TypeConverterFactory.RemoveConverter<TestUnknownClass>();
-			TypeConverterFactory.RemoveConverter( typeof( TestUnknownClass ) );
+			var typeConverterFactory = new TypeConverterCache();
+			typeConverterFactory.RemoveConverter<TestUnknownClass>();
+			typeConverterFactory.RemoveConverter( typeof( TestUnknownClass ) );
 		}
 
 		[TestMethod]
 		public void GetConverterForByteTest()
 		{
-			var converter = TypeConverterFactory.GetConverter( typeof( byte ) );
+			var typeConverterFactory = new TypeConverterCache();
+			var converter = typeConverterFactory.GetConverter( typeof( byte ) );
 
 			Assert.IsInstanceOfType( converter, typeof( ByteConverter ) );
+		}
+		
+		[TestMethod]
+		public void GetConverterForByteArrayTest()
+		{
+			var typeConverterFactory = new TypeConverterCache();
+			var converter = typeConverterFactory.GetConverter( typeof( byte[] ) );
+
+			Assert.IsInstanceOfType( converter, typeof( ByteArrayConverter ) );
 		}
 
 		[TestMethod]
 		public void GetConverterForCharTest()
 		{
-			var converter = TypeConverterFactory.GetConverter( typeof( char ) );
+			var typeConverterFactory = new TypeConverterCache();
+			var converter = typeConverterFactory.GetConverter( typeof( char ) );
 
 			Assert.IsInstanceOfType( converter, typeof( CharConverter ) );
 		}
@@ -66,7 +76,8 @@ namespace CsvHelper.Tests.TypeConversion
 		[TestMethod]
 		public void GetConverterForDateTimeTest()
 		{
-			var converter = TypeConverterFactory.GetConverter( typeof( DateTime ) );
+			var typeConverterFactory = new TypeConverterCache();
+			var converter = typeConverterFactory.GetConverter( typeof( DateTime ) );
 
 			Assert.IsInstanceOfType( converter, typeof( DateTimeConverter ) );
 		}
@@ -74,7 +85,8 @@ namespace CsvHelper.Tests.TypeConversion
 		[TestMethod]
 		public void GetConverterForDecimalTest()
 		{
-			var converter = TypeConverterFactory.GetConverter( typeof( decimal ) );
+			var typeConverterFactory = new TypeConverterCache();
+			var converter = typeConverterFactory.GetConverter( typeof( decimal ) );
 
 			Assert.IsInstanceOfType( converter, typeof( DecimalConverter ) );
 		}
@@ -82,7 +94,8 @@ namespace CsvHelper.Tests.TypeConversion
 		[TestMethod]
 		public void GetConverterForDoubleTest()
 		{
-			var converter = TypeConverterFactory.GetConverter( typeof( double ) );
+			var typeConverterFactory = new TypeConverterCache();
+			var converter = typeConverterFactory.GetConverter( typeof( double ) );
 
 			Assert.IsInstanceOfType( converter, typeof( DoubleConverter ) );
 		}
@@ -90,7 +103,8 @@ namespace CsvHelper.Tests.TypeConversion
 		[TestMethod]
 		public void GetConverterForFloatTest()
 		{
-			var converter = TypeConverterFactory.GetConverter( typeof( float ) );
+			var typeConverterFactory = new TypeConverterCache();
+			var converter = typeConverterFactory.GetConverter( typeof( float ) );
 
 			Assert.IsInstanceOfType( converter, typeof( SingleConverter ) );
 		}
@@ -98,7 +112,8 @@ namespace CsvHelper.Tests.TypeConversion
 		[TestMethod]
 		public void GetConverterForGuidTest()
 		{
-			var converter = TypeConverterFactory.GetConverter( typeof( Guid ) );
+			var typeConverterFactory = new TypeConverterCache();
+			var converter = typeConverterFactory.GetConverter( typeof( Guid ) );
 
 			Assert.IsInstanceOfType( converter, typeof( GuidConverter ) );
 		}
@@ -106,7 +121,8 @@ namespace CsvHelper.Tests.TypeConversion
 		[TestMethod]
 		public void GetConverterForInt16Test()
 		{
-			var converter = TypeConverterFactory.GetConverter( typeof( short ) );
+			var typeConverterFactory = new TypeConverterCache();
+			var converter = typeConverterFactory.GetConverter( typeof( short ) );
 
 			Assert.IsInstanceOfType( converter, typeof( Int16Converter ) );
 		}
@@ -114,7 +130,8 @@ namespace CsvHelper.Tests.TypeConversion
 		[TestMethod]
 		public void GetConverterForInt32Test()
 		{
-			var converter = TypeConverterFactory.GetConverter( typeof( int ) );
+			var typeConverterFactory = new TypeConverterCache();
+			var converter = typeConverterFactory.GetConverter( typeof( int ) );
 
 			Assert.IsInstanceOfType( converter, typeof( Int32Converter ) );
 		}
@@ -122,7 +139,8 @@ namespace CsvHelper.Tests.TypeConversion
 		[TestMethod]
 		public void GetConverterForInt64Test()
 		{
-			var converter = TypeConverterFactory.GetConverter( typeof( long ) );
+			var typeConverterFactory = new TypeConverterCache();
+			var converter = typeConverterFactory.GetConverter( typeof( long ) );
 
 			Assert.IsInstanceOfType( converter, typeof( Int64Converter ) );
 		}
@@ -130,7 +148,8 @@ namespace CsvHelper.Tests.TypeConversion
 		[TestMethod]
 		public void GetConverterForNullableTest()
 		{
-			var converter = TypeConverterFactory.GetConverter( typeof( int? ) );
+			var typeConverterFactory = new TypeConverterCache();
+			var converter = typeConverterFactory.GetConverter( typeof( int? ) );
 
 			Assert.IsInstanceOfType( converter, typeof( NullableConverter ) );
 		}
@@ -138,7 +157,8 @@ namespace CsvHelper.Tests.TypeConversion
 		[TestMethod]
 		public void GetConverterForSByteTest()
 		{
-			var converter = TypeConverterFactory.GetConverter( typeof( sbyte ) );
+			var typeConverterFactory = new TypeConverterCache();
+			var converter = typeConverterFactory.GetConverter( typeof( sbyte ) );
 
 			Assert.IsInstanceOfType( converter, typeof( SByteConverter ) );
 		}
@@ -146,7 +166,8 @@ namespace CsvHelper.Tests.TypeConversion
 		[TestMethod]
 		public void GetConverterForStringTest()
 		{
-			var converter = TypeConverterFactory.GetConverter( typeof( string ) );
+			var typeConverterFactory = new TypeConverterCache();
+			var converter = typeConverterFactory.GetConverter( typeof( string ) );
 
 			Assert.IsInstanceOfType( converter, typeof( StringConverter ) );
 		}
@@ -154,7 +175,8 @@ namespace CsvHelper.Tests.TypeConversion
 		[TestMethod]
 		public void GetConverterForUInt16Test()
 		{
-			var converter = TypeConverterFactory.GetConverter( typeof( ushort ) );
+			var typeConverterFactory = new TypeConverterCache();
+			var converter = typeConverterFactory.GetConverter( typeof( ushort ) );
 
 			Assert.IsInstanceOfType( converter, typeof( UInt16Converter ) );
 		}
@@ -162,7 +184,8 @@ namespace CsvHelper.Tests.TypeConversion
 		[TestMethod]
 		public void GetConverterForUInt32Test()
 		{
-			var converter = TypeConverterFactory.GetConverter( typeof( uint ) );
+			var typeConverterFactory = new TypeConverterCache();
+			var converter = typeConverterFactory.GetConverter( typeof( uint ) );
 
 			Assert.IsInstanceOfType( converter, typeof( UInt32Converter ) );
 		}
@@ -170,7 +193,8 @@ namespace CsvHelper.Tests.TypeConversion
 		[TestMethod]
 		public void GetConverterForUInt64Test()
 		{
-			var converter = TypeConverterFactory.GetConverter( typeof( ulong ) );
+			var typeConverterFactory = new TypeConverterCache();
+			var converter = typeConverterFactory.GetConverter( typeof( ulong ) );
 
 			Assert.IsInstanceOfType( converter, typeof( UInt64Converter ) );
 		}
@@ -178,7 +202,8 @@ namespace CsvHelper.Tests.TypeConversion
 		[TestMethod]
 		public void GetConverterForEnumTest()
 		{
-			var converter = TypeConverterFactory.GetConverter( typeof( TestEnum ) );
+			var typeConverterFactory = new TypeConverterCache();
+			var converter = typeConverterFactory.GetConverter( typeof( TestEnum ) );
 
 			Assert.IsInstanceOfType( converter, typeof( EnumConverter ) );
 		}

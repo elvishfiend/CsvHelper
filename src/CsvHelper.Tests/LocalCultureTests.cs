@@ -1,7 +1,7 @@
-﻿// Copyright 2009-2015 Josh Close and Contributors
+﻿// Copyright 2009-2017 Josh Close and Contributors
 // This file is a part of CsvHelper and is dual licensed under MS-PL and Apache 2.0.
 // See LICENSE.txt for details or visit http://www.opensource.org/licenses/ms-pl.html for MS-PL and http://opensource.org/licenses/Apache-2.0 for Apache 2.0.
-// http://csvhelper.com
+// https://github.com/JoshClose/CsvHelper
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -9,11 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using CsvHelper.Configuration;
-#if WINRT_4_5
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-#else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
 
 namespace CsvHelper.Tests
 {
@@ -37,15 +33,15 @@ namespace CsvHelper.Tests
 
 		private static void RunTestInSpecificCulture( Action action, string cultureName )
 		{
-			var originalCulture = Thread.CurrentThread.CurrentCulture;
+			var originalCulture = CultureInfo.CurrentCulture;
 			try
 			{
-				Thread.CurrentThread.CurrentCulture = new CultureInfo( cultureName );
+				CultureInfo.CurrentCulture = new CultureInfo( cultureName );
 				action();
 			}
 			finally
 			{
-				Thread.CurrentThread.CurrentCulture = originalCulture;
+				CultureInfo.CurrentCulture = originalCulture;
 			}
 		}
 
@@ -54,7 +50,7 @@ namespace CsvHelper.Tests
 			const string source = "DateTimeColumn;DecimalColumn\r\n" +
 								  "11.11.2010;12,0\r\n";
 
-			var configuration = new CsvConfiguration
+			var configuration = new CsvHelper.Configuration.Configuration
 			{
 				Delimiter = ";",
 			};
@@ -80,7 +76,7 @@ namespace CsvHelper.Tests
 			};
 
 			var writer = new StringWriter();
-			var csv = new CsvWriter( writer, new CsvConfiguration { Delimiter = ";" } );
+			var csv = new CsvWriter( writer, new CsvHelper.Configuration.Configuration { Delimiter = ";" } );
 
 			csv.WriteRecords( records );
 

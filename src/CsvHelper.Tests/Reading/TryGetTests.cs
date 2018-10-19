@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Copyright 2009-2017 Josh Close and Contributors
+// This file is a part of CsvHelper and is dual licensed under MS-PL and Apache 2.0.
+// See LICENSE.txt for details or visit http://www.opensource.org/licenses/ms-pl.html for MS-PL and http://opensource.org/licenses/Apache-2.0 for Apache 2.0.
+// https://github.com/JoshClose/CsvHelper
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -63,6 +67,8 @@ namespace CsvHelper.Tests.Reading
 
 			var reader = new CsvReader( parserMock );
 			reader.Read();
+			reader.ReadHeader();
+			reader.Read();
 
 			int field;
 			var got = reader.TryGetField( 0, out field );
@@ -81,7 +87,9 @@ namespace CsvHelper.Tests.Reading
 			queue.Enqueue( null );
 			var parserMock = new ParserMock( queue );
 
-			var reader = new CsvReader( parserMock ) { Configuration = { WillThrowOnMissingField = true } };
+			var reader = new CsvReader( parserMock );
+			reader.Read();
+			reader.ReadHeader();
 			reader.Read();
 
 			int field;
@@ -114,6 +122,29 @@ namespace CsvHelper.Tests.Reading
 		}
 
 		[TestMethod]
+		public void TryGetNullableFieldEmptyDate()
+		{
+			// DateTimeConverter.IsValid() doesn't work correctly
+			// so we need to test and make sure that the conversion
+			// fails for an emptry string for a date.
+			var data = new[] { " " };
+			var queue = new Queue<string[]>();
+			queue.Enqueue( data );
+			queue.Enqueue( null );
+			var parserMock = new ParserMock( queue );
+
+			var reader = new CsvReader( parserMock );
+			reader.Configuration.HasHeaderRecord = false;
+			reader.Read();
+
+			DateTime? field;
+			var got = reader.TryGetField( 0, out field );
+
+			Assert.IsFalse( got );
+			Assert.IsNull( field );
+		}
+
+		[TestMethod]
 		public void TryGetDoesNotThrowWhenWillThrowOnMissingFieldIsEnabled()
 		{
 			var data = new[] { "1" };
@@ -123,7 +154,7 @@ namespace CsvHelper.Tests.Reading
 			var parserMock = new ParserMock( queue );
 
 			var reader = new CsvReader( parserMock );
-			reader.Configuration.WillThrowOnMissingField = true;
+			reader.Configuration.MissingFieldFound = null;
 			reader.Read();
 			string field;
 			Assert.IsFalse( reader.TryGetField( "test", out field ) );
@@ -138,6 +169,8 @@ namespace CsvHelper.Tests.Reading
 				{ "1", "2", "3" }
 			};
 			var reader = new CsvReader( parserMock );
+			reader.Read();
+			reader.ReadHeader();
 			reader.Read();
 
 			int field;

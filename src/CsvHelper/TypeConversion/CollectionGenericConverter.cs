@@ -1,6 +1,11 @@
-﻿using System;
+﻿// Copyright 2009-2017 Josh Close and Contributors
+// This file is a part of CsvHelper and is dual licensed under MS-PL and Apache 2.0.
+// See LICENSE.txt for details or visit http://www.opensource.org/licenses/ms-pl.html for MS-PL and http://opensource.org/licenses/Apache-2.0 for Apache 2.0.
+// https://github.com/JoshClose/CsvHelper
+using System;
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reflection;
 using CsvHelper.Configuration;
 
@@ -15,23 +20,45 @@ namespace CsvHelper.TypeConversion
 		/// Converts the string to an object.
 		/// </summary>
 		/// <param name="text">The string to convert to an object.</param>
-		/// <param name="row">The <see cref="ICsvReaderRow"/> for the current record.</param>
-		/// <param name="propertyMapData">The <see cref="CsvPropertyMapData"/> for the property being created.</param>
+		/// <param name="row">The <see cref="IReaderRow"/> for the current record.</param>
+		/// <param name="memberMapData">The <see cref="MemberMapData"/> for the member being created.</param>
 		/// <returns>The object created from the string.</returns>
-		public override object ConvertFromString( string text, ICsvReaderRow row, CsvPropertyMapData propertyMapData )
+		public override object ConvertFromString( string text, IReaderRow row, MemberMapData memberMapData )
 		{
-			var indexEnd = propertyMapData.IndexEnd < propertyMapData.Index
-				? row.CurrentRecord.Length - 1
-				: propertyMapData.IndexEnd;
-
-			// Since we're using the PropertyType here, this converter can be used for multiple types
+			// Since we're using the MemberType here, this converter can be used for multiple types
 			// as long as they implement IList.
-			var list = (IList)ReflectionHelper.CreateInstance( propertyMapData.Property.PropertyType );
+			var list = (IList)ReflectionHelper.CreateInstance( memberMapData.Member.MemberType() );
+			var type = memberMapData.Member.MemberType().GetGenericArguments()[0];
 
-			var type = propertyMapData.Property.PropertyType.GetGenericArguments()[0];
-			for( var i = propertyMapData.Index; i <= indexEnd; i++ )
+			if( memberMapData.IsNameSet || row.Configuration.HasHeaderRecord && !memberMapData.IsIndexSet )
 			{
-				list.Add( row.GetField( type, i ) );
+				// Use the name.
+				var nameIndex = 0;
+				while( true )
+				{
+					object field;
+					if( !row.TryGetField( type, memberMapData.Names.FirstOrDefault(), nameIndex, out field ) )
+					{
+						break;
+					}
+
+					list.Add( field );
+					nameIndex++;
+				}
+			}
+			else
+			{
+				// Use the index.
+				var indexEnd = memberMapData.IndexEnd < memberMapData.Index
+					? row.Context.Record.Length - 1
+					: memberMapData.IndexEnd;
+
+				for( var i = memberMapData.Index; i <= indexEnd; i++ )
+				{
+					var field = row.GetField( type, i );
+
+					list.Add( field );
+				}
 			}
 
 			return list;

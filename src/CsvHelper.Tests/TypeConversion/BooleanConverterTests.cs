@@ -1,16 +1,13 @@
-﻿// Copyright 2009-2015 Josh Close and Contributors
+﻿// Copyright 2009-2017 Josh Close and Contributors
 // This file is a part of CsvHelper and is dual licensed under MS-PL and Apache 2.0.
 // See LICENSE.txt for details or visit http://www.opensource.org/licenses/ms-pl.html for MS-PL and http://opensource.org/licenses/Apache-2.0 for Apache 2.0.
-// http://csvhelper.com
+// https://github.com/JoshClose/CsvHelper
 using System;
 using System.Globalization;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
-#if WINRT_4_5
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-#else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
+using Moq;
 
 namespace CsvHelper.Tests.TypeConversion
 {
@@ -22,7 +19,7 @@ namespace CsvHelper.Tests.TypeConversion
 		{
 			var converter = new BooleanConverter();
 
-			var propertyMapData = new CsvPropertyMapData( null )
+			var propertyMapData = new MemberMapData( null )
 			{
 				TypeConverter = converter,
 				TypeConverterOptions = { CultureInfo = CultureInfo.CurrentCulture }
@@ -41,40 +38,30 @@ namespace CsvHelper.Tests.TypeConversion
 		{
 			var converter = new BooleanConverter();
 
-			var propertyMapData = new CsvPropertyMapData( null );
+			var propertyMapData = new MemberMapData( null );
 			propertyMapData.TypeConverterOptions.CultureInfo = CultureInfo.CurrentCulture;
+
+			var mockRow = new Mock<IReaderRow>();
 
 			Assert.IsTrue( (bool)converter.ConvertFromString( "true", null, propertyMapData ) );
 			Assert.IsTrue( (bool)converter.ConvertFromString( "True", null, propertyMapData ) );
 			Assert.IsTrue( (bool)converter.ConvertFromString( "TRUE", null, propertyMapData ) );
 			Assert.IsTrue( (bool)converter.ConvertFromString( "1", null, propertyMapData ) );
-			Assert.IsTrue( (bool)converter.ConvertFromString( "yes", null, propertyMapData ) );
-			Assert.IsTrue( (bool)converter.ConvertFromString( "YES", null, propertyMapData ) );
-			Assert.IsTrue( (bool)converter.ConvertFromString( "y", null, propertyMapData ) );
-			Assert.IsTrue( (bool)converter.ConvertFromString( "Y", null, propertyMapData ) );
 			Assert.IsTrue( (bool)converter.ConvertFromString( " true ", null, propertyMapData ) );
-			Assert.IsTrue( (bool)converter.ConvertFromString( " yes ", null, propertyMapData ) );
-			Assert.IsTrue( (bool)converter.ConvertFromString( " y ", null, propertyMapData ) );
 
 			Assert.IsFalse( (bool)converter.ConvertFromString( "false", null, propertyMapData ) );
 			Assert.IsFalse( (bool)converter.ConvertFromString( "False", null, propertyMapData ) );
 			Assert.IsFalse( (bool)converter.ConvertFromString( "FALSE", null, propertyMapData ) );
 			Assert.IsFalse( (bool)converter.ConvertFromString( "0", null, propertyMapData ) );
-			Assert.IsFalse( (bool)converter.ConvertFromString( "no", null, propertyMapData ) );
-			Assert.IsFalse( (bool)converter.ConvertFromString( "NO", null, propertyMapData ) );
-			Assert.IsFalse( (bool)converter.ConvertFromString( "n", null, propertyMapData ) );
-			Assert.IsFalse( (bool)converter.ConvertFromString( "N", null, propertyMapData ) );
 			Assert.IsFalse( (bool)converter.ConvertFromString( " false ", null, propertyMapData ) );
 			Assert.IsFalse( (bool)converter.ConvertFromString( " 0 ", null, propertyMapData ) );
-			Assert.IsFalse( (bool)converter.ConvertFromString( " no ", null, propertyMapData ) );
-			Assert.IsFalse( (bool)converter.ConvertFromString( " n ", null, propertyMapData ) );
 
 			try
 			{
-				converter.ConvertFromString( null, null, propertyMapData );
+				converter.ConvertFromString( null, mockRow.Object, propertyMapData );
 				Assert.Fail();
 			}
-			catch( CsvTypeConverterException )
+			catch( TypeConverterException )
 			{
 			}
 		}

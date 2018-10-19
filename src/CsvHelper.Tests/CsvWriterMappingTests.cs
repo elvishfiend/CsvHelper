@@ -1,15 +1,13 @@
-﻿// Copyright 2009-2015 Josh Close and Contributors
+﻿// Copyright 2009-2017 Josh Close and Contributors
 // This file is a part of CsvHelper and is dual licensed under MS-PL and Apache 2.0.
 // See LICENSE.txt for details or visit http://www.opensource.org/licenses/ms-pl.html for MS-PL and http://opensource.org/licenses/Apache-2.0 for Apache 2.0.
-// http://csvhelper.com
+// https://github.com/JoshClose/CsvHelper
 using System.Collections.Generic;
 using System.IO;
 using CsvHelper.Configuration;
-#if WINRT_4_5
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-#else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
+using CsvHelper.Tests.Mocks;
+using System.Linq;
 
 namespace CsvHelper.Tests
 {
@@ -77,6 +75,84 @@ namespace CsvHelper.Tests
 			}
 		}
 
+		[TestMethod]
+		public void ConvertUsingTest()
+		{
+			string result;
+			using( var stream = new MemoryStream() )
+			using( var reader = new StreamReader( stream ) )
+			using( var writer = new StreamWriter( stream ) )
+			using( var csv = new CsvWriter( writer ) )
+			{
+				var records = new List<TestClass>
+				{
+					new TestClass { IntColumn = 1 }
+				};
+
+				csv.Configuration.HasHeaderRecord = false;
+				csv.Configuration.RegisterClassMap<ConvertUsingMap>();
+				csv.WriteRecords( records );
+				writer.Flush();
+				stream.Position = 0;
+
+				result = reader.ReadToEnd();
+			}
+
+			Assert.AreEqual( "Converted1\r\n", result );
+		}
+
+		[TestMethod]
+		public void ConvertUsingBlockTest()
+		{
+			string result;
+			using( var stream = new MemoryStream() )
+			using( var reader = new StreamReader( stream ) )
+			using( var writer = new StreamWriter( stream ) )
+			using( var csv = new CsvWriter( writer ) )
+			{
+				var records = new List<TestClass>
+				{
+					new TestClass { IntColumn = 1 }
+				};
+
+				csv.Configuration.HasHeaderRecord = false;
+				csv.Configuration.RegisterClassMap<ConvertUsingBlockMap>();
+				csv.WriteRecords( records );
+				writer.Flush();
+				stream.Position = 0;
+
+				result = reader.ReadToEnd();
+			}
+
+			Assert.AreEqual( "Converted1\r\n", result );
+		}
+
+		[TestMethod]
+		public void ConvertUsingConstantTest()
+		{
+			string result;
+			using( var stream = new MemoryStream() )
+			using( var reader = new StreamReader( stream ) )
+			using( var writer = new StreamWriter( stream ) )
+			using( var csv = new CsvWriter( writer ) )
+			{
+				var records = new List<TestClass>
+				{
+					new TestClass { IntColumn = 1 }
+				};
+
+				csv.Configuration.HasHeaderRecord = false;
+				csv.Configuration.RegisterClassMap<ConvertUsingConstantMap>();
+				csv.WriteRecords( records );
+				writer.Flush();
+				stream.Position = 0;
+
+				result = reader.ReadToEnd();
+			}
+
+			Assert.AreEqual( "Constant\r\n", result );
+		}
+
 		private class SameNameMultipleTimesClass
 		{
 			public string Name1 { get; set; }
@@ -86,7 +162,7 @@ namespace CsvHelper.Tests
 			public string Name3 { get; set; }
 		}
 
-		private sealed class SameNameMultipleTimesClassMap : CsvClassMap<SameNameMultipleTimesClass>
+		private sealed class SameNameMultipleTimesClassMap : ClassMap<SameNameMultipleTimesClass>
 		{
 			public SameNameMultipleTimesClassMap()
 			{
@@ -103,12 +179,46 @@ namespace CsvHelper.Tests
 			public string StringColumn { get; set; }
 		}
 
-		private sealed class MultipleNamesClassMap : CsvClassMap<MultipleNamesClass>
+		private sealed class MultipleNamesClassMap : ClassMap<MultipleNamesClass>
 		{
 			public MultipleNamesClassMap()
 			{
 				Map( m => m.IntColumn ).Name( "int1", "int2", "int3" );
 				Map( m => m.StringColumn ).Name( "string1", "string2", "string3" );
+			}
+		}
+
+		private class TestClass
+		{
+			public int IntColumn { get; set; }
+		}
+
+		private sealed class ConvertUsingMap : ClassMap<TestClass>
+		{
+			public ConvertUsingMap()
+			{
+				Map( m => m.IntColumn ).ConvertUsing( m => $"Converted{m.IntColumn}" );
+			}
+		}
+
+		private sealed class ConvertUsingBlockMap : ClassMap<TestClass>
+		{
+			public ConvertUsingBlockMap()
+			{
+				Map( m => m.IntColumn ).ConvertUsing( m =>
+				{
+					var x = "Converted";
+					x += m.IntColumn;
+					return x;
+				} );
+			}
+		}
+
+		private sealed class ConvertUsingConstantMap : ClassMap<TestClass>
+		{
+			public ConvertUsingConstantMap()
+			{
+				Map( m => m.IntColumn ).ConvertUsing( m => "Constant" );
 			}
 		}
 	}
